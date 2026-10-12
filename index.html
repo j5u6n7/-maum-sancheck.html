@@ -16,8 +16,8 @@ body{margin:0;background:#FFFBF2;font-family:system-ui;color:#2D2A26}
 .row{display:flex;gap:6px;flex-wrap:wrap}
 .hide{display:none}
 .calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
-.calCell{border:1px solid #F0E6D8;border-radius:10px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;background:#FFFBF2}
-.calCell.today{border:2px solid #7FA88A}
+.calCell{border:1px solid #F0E6D8;border-radius:10px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;background:#FFFBF2;cursor:pointer}
+.calCell.today{border:2px solid #7FA88A;font-weight:bold}
 .calHead{font-size:10px;color:#888;text-align:center;padding:4px}
 .progress{height:6px;background:#F0E6D8;border-radius:10px;overflow:hidden;margin-top:8px}
 .bar{height:100%;background:#7FA88A;width:0%;transition:width .3s}
@@ -34,9 +34,11 @@ body{margin:0;background:#FFFBF2;font-family:system-ui;color:#2D2A26}
 
 <div id="tab-home">
 <div class="card"><b id="friend"></b><div id="style" style="font-size:12px;color:#888"></div></div>
-<div class="card"><b>📜 오늘의 한 줄</b> <span id="date" style="font-size:11px;float:right;background:#FFF3E2;padding:3px 6px;border-radius:6px"></span><div id="quote" style="margin-top:10px;line-height:1.6"></div><div id="author" style="font-size:12px;color:#888;margin-top:6px"></div></div>
+<div class="card"><b>📜 오늘의 한 줄</b> <span id="date" style="font-size:11px;float:right;background:#FFF3E2;padding:3px 6px;border-radius:6px"></span><div id="quote" 
+style="margin-top:10px;line-height:1.6"></div><div id="author" style="font-size:12px;color:#888;margin-top:6px"></div></div>
 <div class="card"><b>⛅ 마음 날씨 체크</b><div class="row" style="margin-top:10px"><button class="btn" onclick="saveWeather('☀️')">☀️ 맑음</button><button class="btn" onclick="saveWeather('⛅')">⛅ 구름</button><button class="btn" onclick="saveWeather('🌧️')">🌧️ 흐림</button><button class="btn" onclick="saveWeather('🌙')">🌙 밤</button></div><div id="wmsg" style="font-size:12px;color:#888;margin-top:8px"></div><div id="cal" class="calGrid"></div></div>
-<div class="card" id="helpBox" style="display:none;background:#FFF6E8;border-color:#F9D5A7"><b id="helpTitle"></b><div id="helpDesc" style="font-size:13px;margin-top:6px;color:#666"></div><div class="row" style="margin-top:10px"><button class="btn btn-b" onclick="goChat()">💬 이야기하기</button><button class="btn" onclick="goPlay()">🌬️ 호흡</button><button class="btn" onclick="openContacts()">👨‍👩‍👧 연락</button><button class="btn" onclick="document.getElementById('helpBox').style.display='none'">괜찮아요</button></div></div>
+<div class="card" id="helpBox" style="display:none;background:#FFF6E8;border-color:#F9D5A7"><b id="helpTitle"></b><div id="helpDesc" style="font-size:13px;margin-top:6px;color:#666"></div><div class="row" style="margin-top:10px"><button class="btn btn-b" onclick="goChat()">💬 이야기하기</button><button class="btn" onclick="goPlay()">🌬️ 호흡</button><button class="btn" onclick="openContacts()">👨‍👩‍👧 연락</button><button class="btn" onclick="document.getElementById('helpBox').style.display='none'">
+괜찮아요</button></div></div>
 </div>
 
 <div id="tab-chat" class="hide">
@@ -56,7 +58,8 @@ body{margin:0;background:#FFFBF2;font-family:system-ui;color:#2D2A26}
 </div>
 
 <div id="tab-contacts" class="hide">
-<div class="card"><b>내 사람들 & 상담관 (최대 4명)</b><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" onclick="quickAdd('중앙자살예방센터','상담관','1393')" style="background:#FFF6E8">1393</button><button class="btn" onclick="quickAdd('정신건강위기','상담관','1577-0199')" style="background:#FFF6E8">1577-0199</button><button class="btn" onclick="quickAdd('청소년상담','상담관','1388')" style="background:#FFF6E8">1388</button></div><div id="clist" style="margin-top:10px"></div><div style="margin-top:10px;display:flex;gap:6px"><input id="cN" placeholder="이름" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><select id="cR" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><option>가족</option><option>친구</option><option selected>상담관</option><option>선생님</option><option>기타</option></select></div><input id="cP" placeholder="전화번호" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;border:1px solid #ddd"><button class="btn btn-b" style="width:100%;margin-top:6px" onclick="addC()">추가</button></div>
+<div class="card"><b>내 사람들 & 상담관 (최대 4명)</b><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" onclick="quickAdd('중앙자살예방센터','상담관','1393')" style="background:#FFF6E8">1393</button><button class="btn" onclick="quickAdd('정신건강위기','상담관','1577-0199')" style="background:#FFF6E8">1577-0199</button><button class="btn" onclick="quickAdd('청소년상담','상담관','1388')" style="background:#FFF6E8">1388</button></div><div id="clist" style="margin-top:10px"></div><div style="margin-top:10px;display:flex;gap:6px"><input id="cN" placeholder="이름" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><select id="cR" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><option>가족</option><option>친구</option><option selected>상담관</option><option>선생님</option><option>기타</option></select></div><input id="cP" placeholder="전화번호" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;border:1px solid 
+#ddd"><button class="btn btn-b" style="width:100%;margin-top:6px" onclick="addC()">추가</button></div>
 </div>
 
 <div id="tab-play" class="hide">
@@ -78,17 +81,114 @@ var contacts = JSON.parse(localStorage.getItem('contacts')||'[]');
 var chats = JSON.parse(localStorage.getItem('chats')||'[]');
 var weathers = JSON.parse(localStorage.getItem('weathers')||'{}');
 var quotes=[{t:"우리는 고통과 권태 사이를 오가는 시계추와 같다. 그래서 그 사이 작은 행복을 발견하는 것이 지혜다.",a:"쇼펜하우어"},{t:"의미를 찾으면 고통도 견딜 수 있다.",a:"프랑클"},{t:"넘어진 자리에서 쉬어가도 괜찮다.",a:"오늘의 위로"},{t:"오늘을 살아낸 것만으로도 충분히 잘했어.",a:"오늘의 위로"}];
-function today(){return new Date().toISOString().slice(0,10);}
-window.showTab=function(t){['home','chat','contacts','play'].forEach(function(x){document.getElementById('tab-'+x).classList.add('hide');}); document.getElementById('tab-'+t).classList.remove('hide'); if(t==='chat') renderChat(); if(t==='contacts') renderContacts();};
-function renderQuote(){var d=today();var s=JSON.parse(localStorage.getItem('dq')||'null');var q; if(s&&s.date===d) q=s; else {var idx=(d.charCodeAt(8)+seed.charCodeAt(0))%quotes.length; q={date:d,t:quotes[idx].t,a:quotes[idx].a}; localStorage.setItem('dq',JSON.stringify(q));} document.getElementById('date').innerText=q.date; document.getElementById('quote').innerText='"'+q.t+'"'; document.getElementById('author').innerText='- '+q.a; }
-window.saveWeather=function(e){var d=today(); weathers[d]=e; localStorage.setItem('weathers',JSON.stringify(weathers)); document.getElementById('wmsg').innerText=d+' '+e+' 기록됨'; renderCal(); if(e==='🌧️'||e==='🌙'||e==='⛅'){var b=document.getElementById('helpBox'); b.style.display='block'; document.getElementById('helpTitle').innerText=e==='🌧️'?'마음이 흐리구나':e==='🌙'?'깊은 밤 같은 마음이구나':'구름 낀 하루구나'; document.getElementById('helpDesc').innerText='괜찮아, 이야기해볼까?';}};
-function renderCal(){var cal=document.getElementById('cal'); cal.innerHTML=''; var now=new Date(); var y=now.getFullYear(); var m=now.getMonth(); var first=new Date(y,m,1).getDay(); var days=new Date(y,m+1,0).getDate(); ['일','월','화','수','목','금','토'].forEach(function(h){var d=document.createElement('div'); d.className='calHead'; d.innerText=h; cal.appendChild(d);}); for(var i=0;i<first;i++){cal.appendChild(document.createElement('div'));} for(var day=1;day<=days;day++){var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0'); var emo=weathers[ds]; var div=document.createElement('div'); div.className='calCell'; if(ds===today()) div.classList.add('today'); div.innerHTML='<div>'+day+'</div>'+(emo?'<div style="font-size:14px">'+emo+'</div>':''); cal.appendChild(div);}}
-window.goChat=function(){showTab('chat');}; window.goPlay=function(){showTab('play');}; window.openContacts=function(){showTab('contacts');};
+
+function today(){
+  var d = new Date();
+  var year = d.getFullYear();
+  var month = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
+
+var lastCheckedDate = today();
+
+function checkDateUpdate(){
+  var nowStr = today();
+  if(lastCheckedDate !== nowStr){
+    lastCheckedDate = nowStr;
+    renderQuote();
+    renderCal();
+  }
+}
+
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible') {
+    checkDateUpdate();
+  }
+});
+
+setInterval(checkDateUpdate, 30000);
+
+window.showTab=function(t){
+  ['home','chat','contacts','play'].forEach(function(x){document.getElementById('tab-'+x).classList.add('hide');}); 
+  document.getElementById('tab-'+t).classList.remove('hide'); 
+  checkDateUpdate();
+  if(t==='chat') renderChat(); 
+  if(t==='contacts') renderContacts();
+};
+
+function renderQuote(){
+  var d=today();
+  var s=JSON.parse(localStorage.getItem('dq')||'null');
+  var q; 
+  if(s&&s.date===d) {
+    q=s;
+  } else {
+    var idx=(d.charCodeAt(8)+seed.charCodeAt(0))%quotes.length; 
+    q={date:d,t:quotes[idx].t,a:quotes[idx].a}; 
+    localStorage.setItem('dq',JSON.stringify(q));
+  } 
+  document.getElementById('date').innerText=q.date; 
+  document.getElementById('quote').innerText='"'+q.t+'"'; 
+  document.getElementById('author').innerText='- '+q.a; 
+}
+
+window.saveWeather=function(e){
+  var d=today(); 
+  weathers[d]=e; 
+  localStorage.setItem('weathers',JSON.stringify(weathers)); 
+  document.getElementById('wmsg').innerText=d+' '+e+' 기록됨'; 
+  renderCal(); 
+  if(e==='🌧️'||e==='🌙'||e==='⛅'){
+    var b=document.getElementById('helpBox'); 
+    b.style.display='block'; 
+    document.getElementById('helpTitle').innerText=e==='🌧️'?'마음이 흐리구나':e==='🌙'?'깊은 밤 같은 마음이구나':'구름 낀 하루구나'; 
+    document.getElementById('helpDesc').innerText='괜찮아, 이야기해볼까?';
+  }
+};
+
+function renderCal(){
+  var cal=document.getElementById('cal'); 
+  cal.innerHTML=''; 
+  var now=new Date(); 
+  var y=now.getFullYear(); 
+  var m=now.getMonth(); 
+  var first=new Date(y,m,1).getDay(); 
+  var days=new Date(y,m+1,0).getDate(); 
+  var tStr = today();
+
+  ['일','월','화','수','목','금','토'].forEach(function(h){
+    var d=document.createElement('div'); 
+    d.className='calHead'; 
+    d.innerText=h; 
+    cal.appendChild(d);
+  }); 
+
+  for(var i=0;i<first;i++){
+    cal.appendChild(document.createElement('div'));
+  } 
+
+  for(var day=1;day<=days;day++){
+    var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0'); 
+    var emo=weathers[ds]; 
+    var div=document.createElement('div'); 
+    div.className='calCell'; 
+    if(ds===tStr) div.classList.add('today'); 
+    div.innerHTML='<div>'+day+'</div>'+(emo?'<div style="font-size:14px">'+emo+'</div>':''); 
+    cal.appendChild(div);
+  }
+}
+
+window.goChat=function(){showTab('chat');}; 
+window.goPlay=function(){showTab('play');}; 
+window.openContacts=function(){showTab('contacts');};
 
 var engine=null;
 var modelId="Phi-3-mini-4k-instruct-q4f16_1-MLC";
+
 window.loadAI=async function(){
- var btn=document.getElementById('loadBtn'); var bar=document.getElementById('mBar'); var txt=document.getElementById('mText'); var status=document.getElementById('aiStatus');
+ var btn=document.getElementById('loadBtn'); var bar=document.getElementById('mBar'); var txt=document.getElementById('mText'); var 
+status=document.getElementById('aiStatus');
  btn.disabled=true; btn.innerText='깨우는 중... WiFi 유지해줘';
  try{
   engine = await CreateMLCEngine(modelId, {initProgressCallback:(p)=>{ txt.innerText=p.text; if(p.progress) bar.style.width=(p.progress*100).toFixed(0)+'%'; document.getElementById('log').innerText=p.text; }});
@@ -129,13 +229,16 @@ window.send=async function(){
 };
 
 window.renderContacts=function(){var list=document.getElementById('clist'); list.innerHTML=''; contacts.forEach(function(c,i){var d=document.createElement('div'); d.className='card'; d.innerHTML='<b>'+c.name+' ('+c.rel+')</b> <button onclick="delC('+i+')" style="float:right">✕</button><div style="font-size:12px;color:#888">'+c.phone+'</div><div style="margin-top:6px"><a href="tel:'+c.phone+'"><button class="btn btn-b">전화</button></a> <a href="sms:'+c.phone+'"><button class="btn">문자</button></a></div>'; list.appendChild(d);});};
-window.quickAdd=function(name,rel,phone){ if(contacts.length>=4){alert('최대 4명'); return;} contacts.push({name:name,rel:rel,phone:phone}); localStorage.setItem('contacts', JSON.stringify(contacts)); renderContacts(); };
+window.quickAdd=function(name,rel,phone){ if(contacts.length>=4){alert('최대 4명'); return;} contacts.push({name:name,rel:rel,phone:phone}); 
+localStorage.setItem('contacts', JSON.stringify(contacts)); renderContacts(); };
 window.addC=function(){var n=document.getElementById('cN').value.trim(); var r=document.getElementById('cR').value.trim()||'기타'; var p=document.getElementById('cP').value.trim(); if(!n||!p){alert('이름과 번호'); return;} if(contacts.length>=4){alert('최대 4명'); return;} contacts.push({name:n,rel:r,phone:p}); localStorage.setItem('contacts', JSON.stringify(contacts)); document.getElementById('cN').value=''; document.getElementById('cP').value=''; renderContacts();};
 window.delC=function(i){contacts.splice(i,1); localStorage.setItem('contacts', JSON.stringify(contacts)); renderContacts();};
 window.breath=function(){var b=document.getElementById('breath'); b.style.transform='scale(1.4)'; setTimeout(function(){b.style.transform='scale(1)';},3000);};
-window.flyWorry=function(){var inp=document.getElementById('worryInput'); var t=inp.value.trim(); if(!t){alert('걱정 적어줘'); return;} var canvas=document.getElementById('flyCanvas'); canvas.style.display='block'; var ctx=canvas.getContext('2d'); var x=20; var y=60; var vx=4; document.getElementById('flyMsg').innerText='"'+t+'" 날림'; inp.value=''; function draw(){ctx.clearRect(0,0,340,120); ctx.font='20px serif'; ctx.fillText('✈️',x,y); ctx.font='11px sans-serif'; ctx.fillStyle='#888'; ctx.fillText(t.slice(0,15),x-10,y+16); x+=vx; y+=Math.sin(x/30)*0.8; vx*=1.01; if(x<360) requestAnimationFrame(draw); else {ctx.clearRect(0,0,340,120); document.getElementById('flyMsg').innerText='사라졌어요 가벼워졌죠?';}} draw();};
+window.flyWorry=function(){var inp=document.getElementById('worryInput'); var t=inp.value.trim(); if(!t){alert('걱정 적어줘'); return;} var 
+canvas=document.getElementById('flyCanvas'); canvas.style.display='block'; var ctx=canvas.getContext('2d'); var x=20; var y=60; var vx=4; document.getElementById('flyMsg').innerText='"'+t+'" 날림'; inp.value=''; function draw(){ctx.clearRect(0,0,340,120); ctx.font='20px serif'; ctx.fillText('✈️',x,y); ctx.font='11px sans-serif'; ctx.fillStyle='#888'; ctx.fillText(t.slice(0,15),x-10,y+16); x+=vx; y+=Math.sin(x/30)*0.8; vx*=1.01; if(x<360) requestAnimationFrame(draw); else {ctx.clearRect(0,0,340,120); document.getElementById('flyMsg').innerText='사라졌어요 가벼워졌죠?';}} draw();};
 var shapes=[]; var pretty=['💖','⭐','🌸','🌈','🍀','😊','😆','🥰','🌟','💫']; 
-function initShapes(){var c=document.getElementById('shapeCanvas'); if(!c) return; var ctx=c.getContext('2d'); function draw(){ctx.fillStyle='#FFF8F0'; ctx.fillRect(0,0,340,150); shapes.forEach(function(s){ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(s.rot); ctx.globalAlpha=s.alpha; ctx.font=s.size+'px serif'; ctx.fillText(s.emoji,-s.size/2,s.size/3); ctx.restore(); s.y+=s.vy; s.x+=s.vx; s.rot+=0.08; s.alpha-=0.012; s.vy+=0.15;}); shapes=shapes.filter(function(s){return s.alpha>0;}); requestAnimationFrame(draw);} draw(); c.addEventListener('pointerdown', function(e){var r=c.getBoundingClientRect(); var x=(e.clientX-r.left)/r.width*340; var y=(e.clientY-r.top)/r.height*150; for(var i=0;i<2;i++){var em=pretty[Math.floor(Math.random()*pretty.length)]; shapes.push({x:x,y:y,emoji:em,size:16+Math.random()*12,vx:(Math.random()-0.5)*4,vy:-2-Math.random()*3,rot:0,alpha:1});}}); }
+function initShapes(){var c=document.getElementById('shapeCanvas'); if(!c) return; var ctx=c.getContext('2d'); function draw(){ctx.fillStyle='#FFF8F0'; ctx.fillRect(0,0,340,150); shapes.forEach(function(s){ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(s.rot); ctx.globalAlpha=s.alpha; ctx.font=s.size+'px serif'; ctx.fillText(s.emoji,-s.size/2,s.size/3); ctx.restore(); s.y+=s.vy; s.x+=s.vx; s.rot+=0.08; s.alpha-=0.012; s.vy+=0.15;}); shapes=shapes.filter(function(s){return s.alpha>0;}); requestAnimationFrame(draw);} draw(); c.addEventListener('pointerdown', 
+function(e){var r=c.getBoundingClientRect(); var x=(e.clientX-r.left)/r.width*340; var y=(e.clientY-r.top)/r.height*150; for(var i=0;i<2;i++){var em=pretty[Math.floor(Math.random()*pretty.length)]; shapes.push({x:x,y:y,emoji:em,size:16+Math.random()*12,vx:(Math.random()-0.5)*4,vy:-2-Math.random()*3,rot:0,alpha:1});}}); }
 window.clearShapes=function(){shapes=[];}; window.autoPop=function(){for(var i=0;i<8;i++){setTimeout(function(){var em=pretty[Math.floor(Math.random()*pretty.length)]; shapes.push({x:50+Math.random()*240,y:100,emoji:em,size:18,vx:(Math.random()-0.5)*4,vy:-3,rot:0,alpha:1});}, i*120);}};
 
 window.toggleFull=function(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});} else {document.exitFullscreen();}};
