@@ -3,288 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>마음산책 v12 - 팡팡 - 놀이 3개</title>
+<title>마음산책 v13 AI</title>
+<script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+<script type="importmap">{"imports":{"@mlc-ai/web-llm":"https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.79/lib/index.js"}}</script>
 <style>
 body{margin:0;background:#FFFBF2;font-family:system-ui;color:#2D2A26}
 .box{max-width:420px;margin:0 auto;padding:16px;padding-bottom:90px}
 .card{background:#fff;border:1px solid #E8DDCB;border-radius:16px;padding:14px;margin:10px 0}
 .btn{padding:10px 14px;border-radius:12px;border:1px solid #E8DDCB;background:#fff;cursor:pointer;font-weight:600}
 .btn-b{background:#2D2A26;color:#fff;border:none}
+.btn:disabled{opacity:.5}
 .row{display:flex;gap:6px;flex-wrap:wrap}
 .hide{display:none}
 .calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
 .calCell{border:1px solid #F0E6D8;border-radius:10px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;background:#FFFBF2}
 .calCell.today{border:2px solid #7FA88A}
 .calHead{font-size:10px;color:#888;text-align:center;padding:4px}
+.progress{height:6px;background:#F0E6D8;border-radius:10px;overflow:hidden;margin-top:8px}
+.bar{height:100%;background:#7FA88A;width:0%;transition:width .3s}
+.typing{display:flex;gap:4px;padding:10px;background:#F6F1EB;border-radius:14px;width:fit-content;margin:6px 0}
+.dot{width:6px;height:6px;background:#888;border-radius:50%;animation:b 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+@keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
 </style>
 </head>
 <body>
 <div class="box">
-<h3 style="margin:8px 0">🌿 마음산책 v12 - 팡팡</h3>
-<div id="log" style="font-size:11px;color:#999;background:#fff;padding:6px;border-radius:8px">상태: 로딩됨 ✅ (전체화면 버튼: 우하단 ⛶)</div>
+<h3 style="margin:8px 0">🌿 마음산책 v13 AI</h3>
+<div id="log" style="font-size:11px;color:#999;background:#fff;padding:6px;border-radius:8px">상태: 준비중</div>
 
 <div id="tab-home">
-<div class="card">
-<b id="friend"></b><div id="style" style="font-size:12px;color:#888"></div>
-</div>
-<div class="card">
-<b>📜 오늘의 한 줄</b> <span id="date" style="font-size:11px;float:right;background:#FFF3E2;padding:3px 6px;border-radius:6px"></span>
-<div id="quote" style="margin-top:10px;line-height:1.6"></div>
-<div id="author" style="font-size:12px;color:#888;margin-top:6px"></div>
-</div>
-<div class="card">
-<b>⛅ 마음 날씨 체크</b>
-<div class="row" style="margin-top:10px">
-<button class="btn" onclick="saveWeather('☀️')">☀️ 맑음</button>
-<button class="btn" onclick="saveWeather('⛅')">⛅ 구름</button>
-<button class="btn" onclick="saveWeather('🌧️')">🌧️ 흐림</button>
-<button class="btn" onclick="saveWeather('🌙')">🌙 밤</button>
-</div>
-<div id="wmsg" style="font-size:12px;color:#888;margin-top:8px"></div>
-<div id="cal" class="calGrid"></div>
-</div>
-
-<div class="card" id="helpBox" style="display:none;background:#FFF6E8;border-color:#F9D5A7">
-<b id="helpTitle">마음이 흐리구나</b>
-<div id="helpDesc" style="font-size:13px;margin-top:6px;color:#666"></div>
-<div class="row" style="margin-top:10px">
-<button class="btn btn-b" onclick="goChat()">💬 이야기하기</button>
-<button class="btn" onclick="goPlay()">🌬️ 호흡하기</button>
-<button class="btn" onclick="openContacts()">👨‍👩‍👧 연락하기</button>
-<button class="btn" onclick="document.getElementById('helpBox').style.display='none'">괜찮아요</button>
-</div>
-</div>
+<div class="card"><b id="friend"></b><div id="style" style="font-size:12px;color:#888"></div></div>
+<div class="card"><b>📜 오늘의 한 줄</b> <span id="date" style="font-size:11px;float:right;background:#FFF3E2;padding:3px 6px;border-radius:6px"></span><div id="quote" style="margin-top:10px;line-height:1.6"></div><div id="author" style="font-size:12px;color:#888;margin-top:6px"></div></div>
+<div class="card"><b>⛅ 마음 날씨 체크</b><div class="row" style="margin-top:10px"><button class="btn" onclick="saveWeather('☀️')">☀️ 맑음</button><button class="btn" onclick="saveWeather('⛅')">⛅ 구름</button><button class="btn" onclick="saveWeather('🌧️')">🌧️ 흐림</button><button class="btn" onclick="saveWeather('🌙')">🌙 밤</button></div><div id="wmsg" style="font-size:12px;color:#888;margin-top:8px"></div><div id="cal" class="calGrid"></div></div>
+<div class="card" id="helpBox" style="display:none;background:#FFF6E8;border-color:#F9D5A7"><b id="helpTitle"></b><div id="helpDesc" style="font-size:13px;margin-top:6px;color:#666"></div><div class="row" style="margin-top:10px"><button class="btn btn-b" onclick="goChat()">💬 이야기하기</button><button class="btn" onclick="goPlay()">🌬️ 호흡</button><button class="btn" onclick="openContacts()">👨‍👩‍👧 연락</button><button class="btn" onclick="document.getElementById('helpBox').style.display='none'">괜찮아요</button></div></div>
 </div>
 
 <div id="tab-chat" class="hide">
-<div class="card"><b>내 폰 친구와 대화</b><div style="font-size:11px;color:#888">이 폰 안에서만 저장</div></div>
-<div id="chat" style="display:flex;flex-direction:column;gap:8px;min-height:200px"></div>
-<div style="display:flex;gap:6px;margin-top:10px">
-<input id="inp" placeholder="편하게 얘기해줘" style="flex:1;padding:10px;border-radius:10px;border:1px solid #E8DDCB" onkeydown="if(event.key==='Enter') send()">
-<button class="btn btn-b" onclick="send()">전송</button>
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center"><b>내 폰 친구와 대화</b><span id="aiStatus" style="font-size:11px;background:#FFF3E2;padding:4px 8px;border-radius:8px">규칙모드</span></div>
+<div style="font-size:11px;color:#888;margin-top:4px">이 폰 안에서만 저장 · 프라이빗</div>
+<div id="modelCard" style="margin-top:10px;background:#F6F1EB;border-radius:12px;padding:10px">
+<div style="font-size:12px"><b>🧠 진짜 로컬 AI 켜기</b> <span style="font-size:10px;color:#888">한번만 400MB 다운로드, 다음엔 오프라인</span></div>
+<div class="progress"><div class="bar" id="mBar"></div></div>
+<div id="mText" style="font-size:11px;color:#888;margin-top:4px">WiFi에서 눌러주세요. 안 누르면 가벼운 모드로 대화돼요</div>
+<button class="btn btn-b" id="loadBtn" style="width:100%;margin-top:8px" onclick="loadAI()">AI 친구 깨우기 (Mini)</button>
 </div>
+</div>
+<div id="chat" style="display:flex;flex-direction:column;gap:8px;min-height:200px"></div>
+<div id="typing" class="typing hide"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+<div style="display:flex;gap:6px;margin-top:10px;position:sticky;bottom:70px;background:#FFFBF2;padding:6px 0"><input id="inp" placeholder="편하게 얘기해줘" style="flex:1;padding:10px;border-radius:10px;border:1px solid #E8DDCB" onkeydown="if(event.key==='Enter') send()"><button class="btn btn-b" onclick="send()">전송</button></div>
 </div>
 
 <div id="tab-contacts" class="hide">
-<div class="card">
-<b>내 사람들 & 상담관 (최대 4명)</b>
-<div style="font-size:11px;color:#888;margin-top:4px">가족, 친구 외에 상담관/센터도 미리 저장해두면 힘들 때 바로 연결돼요</div>
-<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-<button class="btn" onclick="quickAdd('중앙자살예방센터','상담관','1393')" style="background:#FFF6E8">1393 자살예방</button>
-<button class="btn" onclick="quickAdd('정신건강위기상담','상담관','1577-0199')" style="background:#FFF6E8">1577-0199 정신건강</button>
-<button class="btn" onclick="quickAdd('청소년상담','상담관','1388')" style="background:#FFF6E8">1388 청소년</button>
-</div>
-<div id="clist" style="margin-top:10px"></div>
-<div style="margin-top:10px;display:flex;gap:6px"><input id="cN" placeholder="이름 (예: 엄마, 김상담관)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><select id="cR" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><option value="가족">가족</option><option value="친구">친구</option><option value="상담관" selected>상담관</option><option value="선생님">선생님</option><option value="기타">기타</option></select></div>
-<input id="cP" placeholder="전화번호" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;border:1px solid #ddd">
-<button class="btn btn-b" style="width:100%;margin-top:6px" onclick="addC()">추가</button>
-</div>
+<div class="card"><b>내 사람들 & 상담관 (최대 4명)</b><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" onclick="quickAdd('중앙자살예방센터','상담관','1393')" style="background:#FFF6E8">1393</button><button class="btn" onclick="quickAdd('정신건강위기','상담관','1577-0199')" style="background:#FFF6E8">1577-0199</button><button class="btn" onclick="quickAdd('청소년상담','상담관','1388')" style="background:#FFF6E8">1388</button></div><div id="clist" style="margin-top:10px"></div><div style="margin-top:10px;display:flex;gap:6px"><input id="cN" placeholder="이름" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><select id="cR" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd"><option>가족</option><option>친구</option><option selected>상담관</option><option>선생님</option><option>기타</option></select></div><input id="cP" placeholder="전화번호" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;border:1px solid #ddd"><button class="btn btn-b" style="width:100%;margin-top:6px" onclick="addC()">추가</button></div>
 </div>
 
 <div id="tab-play" class="hide">
-<div class="card"><b>🌬️ 호흡 - 3초 들이쉬고 내쉬기</b><div id="breath" style="width:80px;height:80px;border-radius:40px;background:#A8C3B0;margin:12px auto;transition:transform 3s"></div><button class="btn" style="width:100%" onclick="breath()">호흡 시작</button></div>
-
-<div class="card">
-<b>📝 걱정 접어 날리기</b>
-<div style="font-size:12px;color:#888;margin-top:4px">걱정을 적고 비행기로 접어서 날려봐요. 사라져요.</div>
-<input id="worryInput" placeholder="예: 내일 시험 걱정돼" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin-top:8px">
-<button class="btn btn-b" style="width:100%;margin-top:6px" onclick="flyWorry()">종이비행기로 접어 날리기 ✈️</button>
-<canvas id="flyCanvas" width="340" height="160" style="width:100%;background:#F6F1EB;border-radius:12px;margin-top:8px;display:none"></canvas>
-<div id="flyMsg" style="font-size:12px;color:#888;margin-top:6px"></div>
-</div>
-
-<div class="card">
-<b>✨ 톡톡! 예쁜 모양 팡팡</b>
-<div style="font-size:11px;color:#aaa">화면 톡톡 치면 예쁜 모양이 생겼다가 사라져요. 웃긴 얼굴도 나와요</div>
-<canvas id="shapeCanvas" width="340" height="180" style="width:100%;background:#FFF8F0;border-radius:12px;margin-top:8px;touch-action:none;cursor:pointer"></canvas>
-<div style="display:flex;gap:6px;margin-top:6px"><button class="btn" style="flex:1" onclick="clearShapes()">정리</button><button class="btn" style="flex:1" onclick="autoPop()">자동 팡팡 🎉</button></div>
-</div>
+<div class="card"><b>🌬️ 호흡</b><div id="breath" style="width:80px;height:80px;border-radius:40px;background:#A8C3B0;margin:12px auto;transition:transform 3s"></div><button class="btn" style="width:100%" onclick="breath()">호흡 시작</button></div>
+<div class="card"><b>📝 걱정 접어 날리기</b><input id="worryInput" placeholder="걱정 한 줄" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin-top:8px"><button class="btn btn-b" style="width:100%;margin-top:6px" onclick="flyWorry()">날리기 ✈️</button><canvas id="flyCanvas" width="340" height="120" style="width:100%;background:#F6F1EB;border-radius:12px;margin-top:8px;display:none"></canvas><div id="flyMsg" style="font-size:12px;color:#888;margin-top:6px"></div></div>
+<div class="card"><b>✨ 톡톡 팡팡</b><canvas id="shapeCanvas" width="340" height="150" style="width:100%;background:#FFF8F0;border-radius:12px;margin-top:8px;touch-action:none"></canvas><div style="display:flex;gap:6px;margin-top:6px"><button class="btn" style="flex:1" onclick="clearShapes()">정리</button><button class="btn" style="flex:1" onclick="autoPop()">자동 🎉</button></div></div>
 </div>
 
 <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:420px;width:100%;background:#fff;border-top:1px solid #E8DDCB;display:flex;justify-content:space-around;padding:8px 0;z-index:10">
-<button class="btn" onclick="showTab('home')">🏡 홈</button>
-<button class="btn" onclick="showTab('chat')">💬 대화</button>
-<button class="btn" onclick="showTab('play')">🎮 놀이</button>
-<button class="btn" onclick="showTab('contacts')">⚙️ 내사람</button>
-<button class="btn" onclick="toggleFull()" title="전체화면" style="background:#FFF3E2">⛶</button>
+<button class="btn" onclick="showTab('home')">🏡 홈</button><button class="btn" onclick="showTab('chat')">💬 대화</button><button class="btn" onclick="showTab('play')">🎮 놀이</button><button class="btn" onclick="showTab('contacts')">⚙️ 내사람</button><button class="btn" onclick="toggleFull()" style="background:#FFF3E2">⛶</button>
 </div>
 </div>
 
-<script>
-var log = function(m){ document.getElementById('log').innerText = '상태: '+m; };
+<script type="module">
+import { CreateMLCEngine } from "@mlc-ai/web-llm";
 var seed = localStorage.getItem('seed') || Math.random().toString(36).slice(2,6);
 localStorage.setItem('seed', seed);
 var contacts = JSON.parse(localStorage.getItem('contacts')||'[]');
 var chats = JSON.parse(localStorage.getItem('chats')||'[]');
 var weathers = JSON.parse(localStorage.getItem('weathers')||'{}');
-var quotes = [
- {t:"우리는 고통과 권태 사이를 오가는 시계추와 같다. 그래서 그 사이 작은 행복을 발견하는 것이 지혜다.", a:"쇼펜하우어"},
- {t:"의미를 찾으면 고통도 견딜 수 있다.", a:"프랑클"},
- {t:"넘어진 자리에서 쉬어가도 괜찮다.", a:"오늘의 위로"},
- {t:"오늘을 살아낸 것만으로도 충분히 잘했어.", a:"오늘의 위로"},
- {t:"작은 일에 감사하면 큰 행복이 온다.", a:"일상"}
-];
-function today(){ return new Date().toISOString().slice(0,10); }
-function showTab(t){
- document.getElementById('tab-home').classList.add('hide');
- document.getElementById('tab-chat').classList.add('hide');
- document.getElementById('tab-contacts').classList.add('hide');
- document.getElementById('tab-play').classList.add('hide');
- document.getElementById('tab-'+t).classList.remove('hide');
- if(t==='chat') renderChat();
- if(t==='contacts') renderContacts();
-}
-function renderQuote(){
- var d=today(); var saved=JSON.parse(localStorage.getItem('dq')||'null'); var q;
- if(saved && saved.date===d) q=saved;
- else { var idx=(d.charCodeAt(8)+seed.charCodeAt(0))%quotes.length; q={date:d,t:quotes[idx].t,a:quotes[idx].a}; localStorage.setItem('dq', JSON.stringify(q)); }
- document.getElementById('date').innerText=q.date;
- document.getElementById('quote').innerText='"'+q.t+'"';
- document.getElementById('author').innerText='- '+q.a;
-}
-function saveWeather(e){
- var d=today(); weathers[d]=e; localStorage.setItem('weathers', JSON.stringify(weathers));
- document.getElementById('wmsg').innerText=d+' '+e+' 기록됨';
- renderCal();
- if(e==='🌧️' || e==='🌙' || e==='⛅'){
-  var box=document.getElementById('helpBox'); box.style.display='block';
-  if(e==='🌧️'){ document.getElementById('helpTitle').innerText='마음이 흐리구나'; document.getElementById('helpDesc').innerText='괜찮아 그런 날도 있지. 얘기해볼까?'; }
-  else if(e==='🌙'){ document.getElementById('helpTitle').innerText='깊은 밤 같은 마음이구나'; document.getElementById('helpDesc').innerText='밤이 깊을수록 아침이 가까워. 혼자 있지 말자.'; }
-  else { document.getElementById('helpTitle').innerText='구름 낀 하루구나'; document.getElementById('helpDesc').innerText='구름도 잠깐이야.'; }
-  box.scrollIntoView({behavior:'smooth'});
+var quotes=[{t:"우리는 고통과 권태 사이를 오가는 시계추와 같다. 그래서 그 사이 작은 행복을 발견하는 것이 지혜다.",a:"쇼펜하우어"},{t:"의미를 찾으면 고통도 견딜 수 있다.",a:"프랑클"},{t:"넘어진 자리에서 쉬어가도 괜찮다.",a:"오늘의 위로"},{t:"오늘을 살아낸 것만으로도 충분히 잘했어.",a:"오늘의 위로"}];
+function today(){return new Date().toISOString().slice(0,10);}
+window.showTab=function(t){['home','chat','contacts','play'].forEach(function(x){document.getElementById('tab-'+x).classList.add('hide');}); document.getElementById('tab-'+t).classList.remove('hide'); if(t==='chat') renderChat(); if(t==='contacts') renderContacts();};
+function renderQuote(){var d=today();var s=JSON.parse(localStorage.getItem('dq')||'null');var q; if(s&&s.date===d) q=s; else {var idx=(d.charCodeAt(8)+seed.charCodeAt(0))%quotes.length; q={date:d,t:quotes[idx].t,a:quotes[idx].a}; localStorage.setItem('dq',JSON.stringify(q));} document.getElementById('date').innerText=q.date; document.getElementById('quote').innerText='"'+q.t+'"'; document.getElementById('author').innerText='- '+q.a; }
+window.saveWeather=function(e){var d=today(); weathers[d]=e; localStorage.setItem('weathers',JSON.stringify(weathers)); document.getElementById('wmsg').innerText=d+' '+e+' 기록됨'; renderCal(); if(e==='🌧️'||e==='🌙'||e==='⛅'){var b=document.getElementById('helpBox'); b.style.display='block'; document.getElementById('helpTitle').innerText=e==='🌧️'?'마음이 흐리구나':e==='🌙'?'깊은 밤 같은 마음이구나':'구름 낀 하루구나'; document.getElementById('helpDesc').innerText='괜찮아, 이야기해볼까?';}};
+function renderCal(){var cal=document.getElementById('cal'); cal.innerHTML=''; var now=new Date(); var y=now.getFullYear(); var m=now.getMonth(); var first=new Date(y,m,1).getDay(); var days=new Date(y,m+1,0).getDate(); ['일','월','화','수','목','금','토'].forEach(function(h){var d=document.createElement('div'); d.className='calHead'; d.innerText=h; cal.appendChild(d);}); for(var i=0;i<first;i++){cal.appendChild(document.createElement('div'));} for(var day=1;day<=days;day++){var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0'); var emo=weathers[ds]; var div=document.createElement('div'); div.className='calCell'; if(ds===today()) div.classList.add('today'); div.innerHTML='<div>'+day+'</div>'+(emo?'<div style="font-size:14px">'+emo+'</div>':''); cal.appendChild(div);}}
+window.goChat=function(){showTab('chat');}; window.goPlay=function(){showTab('play');}; window.openContacts=function(){showTab('contacts');};
+
+var engine=null;
+var modelId="Phi-3-mini-4k-instruct-q4f16_1-MLC";
+window.loadAI=async function(){
+ var btn=document.getElementById('loadBtn'); var bar=document.getElementById('mBar'); var txt=document.getElementById('mText'); var status=document.getElementById('aiStatus');
+ btn.disabled=true; btn.innerText='깨우는 중... WiFi 유지해줘';
+ try{
+  engine = await CreateMLCEngine(modelId, {initProgressCallback:(p)=>{ txt.innerText=p.text; if(p.progress) bar.style.width=(p.progress*100).toFixed(0)+'%'; document.getElementById('log').innerText=p.text; }});
+  status.innerText='AI 활성화 ✅'; status.style.background='#D6F5D6';
+  txt.innerText='준비 완료! 이제 진짜 AI가 대화해요. 오프라인에서도 돼요';
+  btn.innerText='준비 완료!';
+  document.getElementById('log').innerText='AI 활성화 완료 - 오프라인 대화 가능';
+ }catch(e){
+  txt.innerText='실패: '+e.message+' - 가벼운 모드로 계속 대화해요';
+  btn.disabled=false; btn.innerText='다시 시도';
  }
-}
-function renderCal(){
- var cal=document.getElementById('cal'); cal.innerHTML='';
- var now=new Date(); var y=now.getFullYear(); var m=now.getMonth();
- var first=new Date(y,m,1).getDay(); var days=new Date(y,m+1,0).getDate();
- var heads=['일','월','화','수','목','금','토'];
- heads.forEach(function(h){ var d=document.createElement('div'); d.className='calHead'; d.innerText=h; cal.appendChild(d); });
- for(var i=0;i<first;i++){ var d=document.createElement('div'); cal.appendChild(d); }
- for(var day=1; day<=days; day++){
-  var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
-  var emo=weathers[ds];
-  var div=document.createElement('div'); div.className='calCell';
-  if(ds===today()) div.classList.add('today');
-  div.innerHTML='<div>'+day+'</div>'+(emo?'<div style="font-size:14px">'+emo+'</div>':'');
-  cal.appendChild(div);
+};
+
+function renderChat(){var box=document.getElementById('chat'); box.innerHTML=''; chats.forEach(function(c){var d=document.createElement('div'); d.style.padding='8px 10px'; d.style.borderRadius='12px'; d.style.maxWidth='80%'; d.style.fontSize='13px'; if(c.role==='user'){d.style.background='#2D2A26'; d.style.color='#fff'; d.style.marginLeft='auto';} else {d.style.background='#fff'; d.style.border='1px solid #E8DDCB';} d.innerText=c.text; box.appendChild(d);}); box.scrollTop=box.scrollHeight;}
+
+async function genAI(text){
+ if(!engine){
+  if(text.includes('힘들')) return '그랬구나, 오래 끌고 있었겠다. 조금 더 얘기해줄래?';
+  if(text.includes('외로')) return '외롭구나, 나 여기 있어. 같이 있어보자';
+  return ['그렇구나, 그래서 어떻게 됐어?','오 그래? 더 들려줘','그랬구나 ㅎㅎ'][Math.floor(Math.random()*3)];
  }
+ try{
+  var sys='너는 폰 안 친구 ID '+seed+' 따뜻한 참견쟁이, 한국어 짧게 1-2문장.';
+  var msgs=[{role:'system',content:sys}].concat(chats.slice(-6).map(function(h){return {role:h.role==='user'?'user':'assistant', content:h.text}})).concat([{role:'user',content:text}]);
+  var res=await engine.chat.completions.create({messages:msgs, max_tokens:150, temperature:0.8});
+  return res.choices[0].message.content;
+ }catch(e){ return '잠깐 오류가 났어, 다시 얘기해줄래?'; }
 }
-function goChat(){ showTab('chat'); document.getElementById('inp').value='오늘 마음이 흐려서...'; }
-function goPlay(){ showTab('play'); }
-function openContacts(){ showTab('contacts'); }
-function renderChat(){
- var box=document.getElementById('chat'); box.innerHTML='';
- chats.forEach(function(c){
-  var d=document.createElement('div'); d.style.padding='8px 10px'; d.style.borderRadius='12px'; d.style.maxWidth='80%'; d.style.fontSize='13px';
-  if(c.role==='user'){ d.style.background='#2D2A26'; d.style.color='#fff'; d.style.marginLeft='auto'; } else { d.style.background='#fff'; d.style.border='1px solid #E8DDCB'; }
-  d.innerText=c.text; box.appendChild(d);
- });
-}
-function send(){
+
+window.send=async function(){
  var inp=document.getElementById('inp'); var t=inp.value.trim(); if(!t) return;
  chats.push({role:'user', text:t}); localStorage.setItem('chats', JSON.stringify(chats)); inp.value=''; renderChat();
- setTimeout(function(){ var r='그렇구나, 그래서 어떻게 됐어?'; if(t.includes('힘들')) r='그랬구나 오래 있었겠다 더 얘기해줄래?'; chats.push({role:'ai', text:r}); localStorage.setItem('chats', JSON.stringify(chats)); renderChat(); },400);
-}
-function renderContacts(){
- var list=document.getElementById('clist'); list.innerHTML='';
- contacts.forEach(function(c,i){
-  var d=document.createElement('div'); d.className='card';
-  d.innerHTML='<b>'+c.name+' ('+c.rel+')</b> <button onclick="delC('+i+')" style="float:right">✕</button><div style="font-size:12px;color:#888">'+c.phone+'</div><div style="margin-top:6px"><a href="tel:'+c.phone+'"><button class="btn btn-b">전화</button></a> <a href="sms:'+c.phone+'"><button class="btn">문자</button></a></div>';
-  list.appendChild(d);
- });
-}
-function quickAdd(name,rel,phone){ if(contacts.length>=4){ alert('최대 4명'); return; } contacts.push({name:name,rel:rel,phone:phone}); localStorage.setItem('contacts', JSON.stringify(contacts)); renderContacts(); log(name+' 추가됨'); }
-function addC(){
- var n=document.getElementById('cN').value.trim(); var r=document.getElementById('cR').value.trim()||'기타'; var p=document.getElementById('cP').value.trim();
- if(!n||!p){ alert('이름과 전화번호'); return; }
- if(contacts.length>=4){ alert('최대 4명'); return; }
- contacts.push({name:n,rel:r,phone:p}); localStorage.setItem('contacts', JSON.stringify(contacts)); document.getElementById('cN').value=''; document.getElementById('cP').value=''; renderContacts();
-}
-function delC(i){ contacts.splice(i,1); localStorage.setItem('contacts', JSON.stringify(contacts)); renderContacts(); }
-function breath(){ var b=document.getElementById('breath'); b.style.transform='scale(1.4)'; setTimeout(function(){b.style.transform='scale(1)';},3000); }
+ document.getElementById('typing').classList.remove('hide');
+ var reply=await genAI(t);
+ document.getElementById('typing').classList.add('hide');
+ chats.push({role:'ai', text:reply}); localStorage.setItem('chats', JSON.stringify(chats)); renderChat();
+ document.getElementById('log').innerText='대화: '+(engine?'AI':'규칙')+' 모드';
+};
 
-function flyWorry(){
- var inp=document.getElementById('worryInput'); var t=inp.value.trim(); if(!t){ alert('걱정 한 줄 적어줘'); return; }
- var canvas=document.getElementById('flyCanvas'); canvas.style.display='block';
- var ctx=canvas.getContext('2d'); var x=20; var y=80; var vx=4;
- document.getElementById('flyMsg').innerText='"'+t+'" 를 날려보냈어요. 잘했어요.';
- inp.value='';
- function draw(){
-  ctx.clearRect(0,0,340,160);
-  ctx.font='20px serif'; ctx.fillText('✈️', x, y);
-  ctx.font='12px sans-serif'; ctx.fillStyle='#888'; ctx.fillText(t.slice(0,15), x-10, y+18);
-  x+=vx; y+=Math.sin(x/30)*0.8; vx*=1.01;
-  if(x<360) requestAnimationFrame(draw);
-  else { ctx.clearRect(0,0,340,160); document.getElementById('flyMsg').innerText='훨훨 날아가서 사라졌어요. 한결 가볍죠?'; }
- }
- draw();
- log('걱정 날림: '+t);
-}
-var shapes=[];
-var pretty = ['💖','⭐','🌸','🌈','🍀','😊','😆','🥰','🌟','💫','🌼','🦋'];
-function initShapes(){
- var canvas=document.getElementById('shapeCanvas'); if(!canvas) return;
- var ctx=canvas.getContext('2d');
- function drawS(){
-  ctx.fillStyle='#FFF8F0'; ctx.fillRect(0,0,340,180);
-  shapes.forEach(function(s){
-   ctx.save();
-   ctx.translate(s.x, s.y);
-   ctx.rotate(s.rot);
-   ctx.globalAlpha = s.alpha;
-   ctx.font = s.size+'px serif';
-   ctx.fillText(s.emoji, -s.size/2, s.size/3);
-   ctx.restore();
-   s.y += s.vy; s.x += s.vx; s.rot+=0.08; s.alpha-=0.012; s.size*=1.005;
-   s.vy+=0.15;
-  });
-  shapes=shapes.filter(function(s){return s.alpha>0 && s.y<200;});
-  requestAnimationFrame(drawS);
- }
- drawS();
- canvas.addEventListener('pointerdown', function(e){
-  var rect=canvas.getBoundingClientRect(); var x=(e.clientX-rect.left)/rect.width*340; var y=(e.clientY-rect.top)/rect.height*180;
-  spawnShapes(x,y,1);
- });
-}
-function spawnShapes(x,y,count){
- for(var i=0;i<count;i++){
-  var emoji = pretty[Math.floor(Math.random()*pretty.length)];
-  shapes.push({x:x+(Math.random()-0.5)*30, y:y, emoji:emoji, size:16+Math.random()*14, vx:(Math.random()-0.5)*4, vy:-2-Math.random()*3, rot:0, alpha:1});
- }
- log('팡팡 '+count+'개');
-}
-function clearShapes(){ shapes=[]; }
-function autoPop(){
- for(var i=0;i<8;i++){ setTimeout(function(){ spawnShapes(50+Math.random()*240, 100+Math.random()*40, 2); }, i*120); }
-}
-document.addEventListener('DOMContentLoaded', function(){ setTimeout(initShapes,600); });
+window.renderContacts=function(){var list=document.getElementById('clist'); list.innerHTML=''; contacts.forEach(function(c,i){var d=document.createElement('div'); d.className='card'; d.innerHTML='<b>'+c.name+' ('+c.rel+')</b> <button onclick="delC('+i+')" style="float:right">✕</button><div style="font-size:12px;color:#888">'+c.phone+'</div><div style="margin-top:6px"><a href="tel:'+c.phone+'"><button class="btn btn-b">전화</button></a> <a href="sms:'+c.phone+'"><button class="btn">문자</button></a></div>'; list.appendChild(d);});};
+window.quickAdd=function(name,rel,phone){ if(contacts.length>=4){alert('최대 4명'); return;} contacts.push({name:name,rel:rel,phone:phone}); localStorage.setItem('contacts', JSON.stringify(contacts)); renderContacts(); };
+window.addC=function(){var n=document.getElementById('cN').value.trim(); var r=document.getElementById('cR').value.trim()||'기타'; var p=document.getElementById('cP').value.trim(); if(!n||!p){alert('이름과 번호'); return;} if(contacts.length>=4){alert('최대 4명'); return;} contacts.push({name:n,rel:r,phone:p}); localStorage.setItem('contacts', JSON.stringify(contacts)); document.getElementById('cN').value=''; document.getElementById('cP').value=''; renderContacts();};
+window.delC=function(i){contacts.splice(i,1); localStorage.setItem('contacts', JSON.stringify(contacts)); renderContacts();};
+window.breath=function(){var b=document.getElementById('breath'); b.style.transform='scale(1.4)'; setTimeout(function(){b.style.transform='scale(1)';},3000);};
+window.flyWorry=function(){var inp=document.getElementById('worryInput'); var t=inp.value.trim(); if(!t){alert('걱정 적어줘'); return;} var canvas=document.getElementById('flyCanvas'); canvas.style.display='block'; var ctx=canvas.getContext('2d'); var x=20; var y=60; var vx=4; document.getElementById('flyMsg').innerText='"'+t+'" 날림'; inp.value=''; function draw(){ctx.clearRect(0,0,340,120); ctx.font='20px serif'; ctx.fillText('✈️',x,y); ctx.font='11px sans-serif'; ctx.fillStyle='#888'; ctx.fillText(t.slice(0,15),x-10,y+16); x+=vx; y+=Math.sin(x/30)*0.8; vx*=1.01; if(x<360) requestAnimationFrame(draw); else {ctx.clearRect(0,0,340,120); document.getElementById('flyMsg').innerText='사라졌어요 가벼워졌죠?';}} draw();};
+var shapes=[]; var pretty=['💖','⭐','🌸','🌈','🍀','😊','😆','🥰','🌟','💫']; 
+function initShapes(){var c=document.getElementById('shapeCanvas'); if(!c) return; var ctx=c.getContext('2d'); function draw(){ctx.fillStyle='#FFF8F0'; ctx.fillRect(0,0,340,150); shapes.forEach(function(s){ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(s.rot); ctx.globalAlpha=s.alpha; ctx.font=s.size+'px serif'; ctx.fillText(s.emoji,-s.size/2,s.size/3); ctx.restore(); s.y+=s.vy; s.x+=s.vx; s.rot+=0.08; s.alpha-=0.012; s.vy+=0.15;}); shapes=shapes.filter(function(s){return s.alpha>0;}); requestAnimationFrame(draw);} draw(); c.addEventListener('pointerdown', function(e){var r=c.getBoundingClientRect(); var x=(e.clientX-r.left)/r.width*340; var y=(e.clientY-r.top)/r.height*150; for(var i=0;i<2;i++){var em=pretty[Math.floor(Math.random()*pretty.length)]; shapes.push({x:x,y:y,emoji:em,size:16+Math.random()*12,vx:(Math.random()-0.5)*4,vy:-2-Math.random()*3,rot:0,alpha:1});}}); }
+window.clearShapes=function(){shapes=[];}; window.autoPop=function(){for(var i=0;i<8;i++){setTimeout(function(){var em=pretty[Math.floor(Math.random()*pretty.length)]; shapes.push({x:50+Math.random()*240,y:100,emoji:em,size:18,vx:(Math.random()-0.5)*4,vy:-3,rot:0,alpha:1});}, i*120);}};
 
-function toggleFull(){
- if(!document.fullscreenElement){ document.documentElement.requestFullscreen().then(function(){log('전체화면 진입 ✅ - 뒤로가기 누르면 나가짐');}).catch(function(){log('전체화면 실패 - 브라우저에서 직접 열어주세요');}); }
- else { document.exitFullscreen(); log('전체화면 해제'); }
-}
-// 뒤로가기(빨간 동그라미) 처리 - 전체화면일 때 나가기, 아니면 홈으로
-window.addEventListener('popstate', function(){
- if(document.fullscreenElement){ document.exitFullscreen(); }
-});
-document.addEventListener('fullscreenchange', function(){
- if(!document.fullscreenElement){ log('전체화면 나감 - 홈으로'); showTab('home'); }
-});
-// history push로 뒤로가기 감지
-history.pushState(null,null,location.href);
-window.addEventListener('popstate', function(){
- if(document.fullscreenElement){ document.exitFullscreen(); history.pushState(null,null,location.href); }
- else { toggleFull(); history.pushState(null,null,location.href); }
-});
+window.toggleFull=function(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});} else {document.exitFullscreen();}};
+history.pushState(null,null,location.href); window.addEventListener('popstate', function(){if(document.fullscreenElement){document.exitFullscreen();} else {toggleFull();} history.pushState(null,null,location.href);});
 
 document.getElementById('friend').innerText='내 폰 친구 '+seed.toUpperCase();
 document.getElementById('style').innerText=['따뜻한 참견쟁이','담담한 경청러','유쾌한 수다쟁이'][seed.charCodeAt(0)%3]+' · 이 폰에서만';
 renderQuote(); renderCal();
-if(chats.length===0){ chats.push({role:'ai', text:'안녕! 나는 이 폰 안에서만 사는 친구야. ID '+seed.toUpperCase()+'!'}); localStorage.setItem('chats', JSON.stringify(chats)); }
+if(chats.length===0){chats.push({role:'ai', text:'안녕! 나는 이 폰 안에서만 사는 친구야. ID '+seed.toUpperCase()+'! 대화 탭에서 AI 깨우기 누르면 진짜 AI가 말해줘 ㅎㅎ'}); localStorage.setItem('chats', JSON.stringify(chats));}
 renderChat(); renderContacts();
-log('초기화 완료 - 날씨 눌러서 달력 확인, ⛶ 누르면 전체화면');
+document.getElementById('log').innerText='초기화 완료 - 대화 탭에서 AI 깨우기 누르면 활성화';
+setTimeout(initShapes,600);
 </script>
 </body>
 </html>
